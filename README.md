@@ -1,27 +1,30 @@
-# 🌀 NoisePyTorch
+# 🌫️ Pytorch-Noise-Methods
 
 This repository enables **easy use of numerous noise formulas** with **PyTorch implementation in Python**.  
-It operates with **minimal latency** thanks to specialized optimization techniques for **GPU/CPU** and **high-speed matrix operations**.
+It operates with **minimal latency** thanks to specialized optimization techniques for **GPU** and **high-speed matrix operations**.
 
----
+## Features:
 
-## 🔹 Supported Noise Types
+- **Easy operation and integration for ML.**
+- **Parallel computing engine thanks to GPU-accelerated matrix multiplications.**
+- **Easy visualization with matplotlib.**
 
-- 🌊 **Perlin Noise**  
-- 🔺 **Fractal Noise**  
-- ⚪ **White Noise**  
 
-> More noise types will be added in future updates!
 
----
+## Preview:
+<img src="outputs/noise.png" width="300">
 
-## ⚡ Features
+## Try In Collab 👇
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/12vHh-88utMmqnkKY69_glVnV6jV6mTNd?)
 
-- 🏎️ High-performance GPU/CPU optimized  
-- 🧮 Efficient matrix operations  
-- 🔧 Easy integration with PyTorch workflows  
+## Supported Noise Types:
 
----
+- **Perlin Noise**  
+- **Fractal Noise**  
+- **White Noise**  
+
+> More noise types will be added in future updates
+
 
 ## 📜 License
 
