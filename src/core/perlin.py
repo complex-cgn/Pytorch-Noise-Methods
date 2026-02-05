@@ -1,6 +1,8 @@
 import logging
 from dataclasses import dataclass, field
 from typing import Optional
+import os
+from ..config import WIDTH, HEIGHT, SCALE, OCTAVES, SEED, GRAYSCALE, OUTPUT_PATH
 
 import matplotlib.pyplot as plt
 import torch
@@ -208,9 +210,14 @@ def generate_and_save_noise(
     
     # Generate noise
     noise = noise_generator.fractal_noise_2d(octaves)
+
+    output_dir = os.path.dirname(output_path)
+    if output_dir and not os.path.exists(output_dir):
+        logger.info("Output folder can't found creating new one...")
+        os.makedirs(output_dir)
     
     # Save as image
-    plt.figure(figsize=(6, 6))
+    plt.figure(figsize=(2, 2))
     plt.imshow(noise.cpu().numpy(), cmap="gray", origin="upper")
     plt.axis("off")
     plt.title("Perlin Noise")
@@ -225,10 +232,10 @@ if __name__ == "__main__":
 
     # Generate and save noise
     generate_and_save_noise(
-        width=4096,
-        height=4096,
-        scale=4.0,
-        octaves=12,
-        output_path="outputs/noise.png",
+        width=WIDTH,
+        height=HEIGHT,
+        scale=SCALE,
+        octaves=OCTAVES,
+        output_path=OUTPUT_PATH,
         dpi=150,
     )

@@ -1,1 +1,5 @@
-# Nothing to ignore
+
+# Ignore from git
+__pycache__/
+*.py[cod]
+.venv

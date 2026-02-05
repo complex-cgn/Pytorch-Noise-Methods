@@ -9,7 +9,12 @@ It operates with **minimal latency** thanks to specialized optimization techniqu
 - **Parallel computing engine thanks to GPU-accelerated matrix multiplications.**
 - **Easy visualization with matplotlib.**
 
+### To run the code use this command 👇
+While in the project root directory (src), copy the code below and execute it.
 
+```bash
+python -m src.core.perlin
+```
 
 ## Preview:
 <img src="outputs/noise.png" width="300">
