@@ -1,14 +1,12 @@
 import logging
-import os
 from dataclasses import dataclass, field
 from typing import Optional
 
-import matplotlib.pyplot as plt
 import torch
 
-from ..config import (COLOR_MAP, HEIGHT, OCTAVES, OUTPUT_PATH, SCALE, SEED,
-                      WIDTH)
+from .. import config
 from ..utils.tensor_to_image import tensor_to_image
+from ..utils.timer import Timer
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -182,13 +180,19 @@ if __name__ == "__main__":
     logger.info("Generating Perlin noise...")
 
     noise_generator = Perlin(
-        width=WIDTH,
-        height=HEIGHT,
-        scale=SCALE,
-        seed=SEED,
+        config.WIDTH,
+        config.HEIGHT,
+        config.SCALE,
+        config.SEED,
     )
 
-    noise = noise_generator.fractal_noise_2d(OCTAVES)
+    with Timer() as t:
+        noise = noise_generator.fractal_noise_2d(config.OCTAVES)
+    logger.info(f"Noise Generation Executed In {t.elapsed*1000:.2f} Miliseconds!")
     tensor_to_image(
-        image_tensor=noise, output_path="outputs/noise.png", color_map="gray", dpi=150
+        noise,
+        config.OUTPUT_PATH,
+        config.COLOR_MAP,
+        150,
+        False
     )
