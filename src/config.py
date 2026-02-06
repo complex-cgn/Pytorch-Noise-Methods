@@ -5,5 +5,5 @@ HEIGHT = 1024
 SCALE = 4.0
 OCTAVES = 8
 SEED = None
-GRAYSCALE = True
+COLOR_MAP = True
 OUTPUT_PATH = "outputs/noise.png"
