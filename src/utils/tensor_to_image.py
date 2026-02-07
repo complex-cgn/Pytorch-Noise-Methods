@@ -4,15 +4,23 @@ import os
 import matplotlib.pyplot as plt
 import torch
 
-# Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
 def tensor_to_image(
-    image_tensor: torch.Tensor, output_path: str, color_map: str, dpi: int, show_plot: bool
+    image_tensor: torch.Tensor,
+    output_path: str,
+    color_map: str,
+    dpi: int,
+    show_plot: bool,
 ):
-    """Tensor to Image converter with matplotlib"""
+    """
+    Tensor-to-image conversion utility.
+
+    Supports saving tensors as images using matplotlib, with optional
+    color mapping and plot display.
+    """
 
     output_dir = os.path.dirname(output_path)
     if output_dir and not os.path.exists(output_dir):
@@ -25,7 +33,7 @@ def tensor_to_image(
     plt.axis("off")
     plt.title("Perlin Noise")
     plt.savefig(output_path, dpi=dpi)
-    
+
     if show_plot:
         plt.show()
     plt.close()

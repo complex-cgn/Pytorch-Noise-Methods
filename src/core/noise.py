@@ -1,5 +1,6 @@
 import logging
 from dataclasses import dataclass, field
+import math
 from typing import Optional
 
 import torch
@@ -8,13 +9,12 @@ from .. import config
 from ..utils.tensor_to_image import tensor_to_image
 from ..utils.timer import Timer
 
-# Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
 @dataclass
-class Perlin:
+class Noise:
     """
     A class for generating Perlin noise using PyTorch GPU acceleration.
 
@@ -121,13 +121,26 @@ class Perlin:
         yf = y - y0
 
         # Compute dot products for each corner
-        n00 = rotation[y0, x0].cos() * xf + rotation[y0, x0].sin() * yf
-        n10 = rotation[y0, x1].cos() * (xf - 1) + rotation[y0, x1].sin() * yf
-        n01 = rotation[y1, x0].cos() * xf + rotation[y1, x0].sin() * (yf - 1)
-        n11 = rotation[y1, x1].cos() * (xf - 1) + rotation[y1, x1].sin() * (yf - 1)
+        r00 = rotation[y0, x0]
+        r10 = rotation[y0, x1]
+        r01 = rotation[y1, x0]
+        r11 = rotation[y1, x1]
+
+        c00, s00 = r00.cos(), r00.sin()
+        c10, s10 = r10.cos(), r10.sin()
+        c01, s01 = r01.cos(), r01.sin()
+        c11, s11 = r11.cos(), r11.sin()
+
+        xf0 = xf - 1
+        yf0 = yf - 1
+
+        n00 = c00 * xf + s00 * yf
+        n10 = c10 * xf0 + s10 * yf
+        n01 = c01 * xf + s01 * yf0
+        n11 = c11 * xf0 + s11 * yf0
 
         # Interpolate
-        u = self._fade(xf)  # u is among to (0 - 1)
+        u = self._fade(xf)
         value = self._lerp(
             self._lerp(n00, n10, u), self._lerp(n01, n11, u), self._fade(yf)
         )
@@ -175,11 +188,71 @@ class Perlin:
 
         return total_noise
 
+    def white_noise_2d(self):
+        return torch.empty((self.height, self.width), device=self.device).uniform_()
+    
+    @staticmethod
+    def grad(hash, x, y):
+        # 8 yönlü gradient
+        h = hash & 7
+        u = torch.where(h < 4, x, y)
+        v = torch.where(h < 4, y, x)
+        return torch.where((h & 1) == 0, u, -u) + torch.where((h & 2) == 0, v, -v)
+    
+    def simplex_noise_2d(self, x, y, perm):
+        """
+        x, y : tensor (aynı shape)
+        perm : 512 boyutlu permutation table
+        """
+
+        # Skew / Unskew faktörleri
+        F2 = 0.5 * (math.sqrt(3.0) - 1.0)
+        G2 = (3.0 - math.sqrt(3.0)) / 6.0
+
+        s = (x + y) * F2
+        i = torch.floor(x + s)
+        j = torch.floor(y + s)
+
+        t = (i + j) * G2
+        X0 = i - t
+        Y0 = j - t
+
+        x0 = x - X0
+        y0 = y - Y0
+
+        # Simplex köşesi seçimi
+        i1 = (x0 > y0).int()
+        j1 = 1 - i1
+
+        x1 = x0 - i1 + G2
+        y1 = y0 - j1 + G2
+        x2 = x0 - 1.0 + 2.0 * G2
+        y2 = y0 - 1.0 + 2.0 * G2
+
+        ii = (i.long() & 255)
+        jj = (j.long() & 255)
+
+        gi0 = perm[ii + perm[jj]]
+        gi1 = perm[ii + i1 + perm[jj + j1]]
+        gi2 = perm[ii + 1 + perm[jj + 1]]
+
+        # Katkılar
+        t0 = 0.5 - x0*x0 - y0*y0
+        t1 = 0.5 - x1*x1 - y1*y1
+        t2 = 0.5 - x2*x2 - y2*y2
+
+        n0 = torch.where(t0 < 0, 0.0, (t0 ** 4) * self.grad(gi0, x0, y0))
+        n1 = torch.where(t1 < 0, 0.0, (t1 ** 4) * self.grad(gi1, x1, y1))
+        n2 = torch.where(t2 < 0, 0.0, (t2 ** 4) * self.grad(gi2, x2, y2))
+
+        return 70.0 * (n0 + n1 + n2)
+
+
 
 if __name__ == "__main__":
     logger.info("Generating Perlin noise...")
 
-    noise_generator = Perlin(
+    noise_generator = Noise(
         config.WIDTH,
         config.HEIGHT,
         config.SCALE,
@@ -187,12 +260,18 @@ if __name__ == "__main__":
     )
 
     with Timer() as t:
-        noise = noise_generator.fractal_noise_2d(config.OCTAVES)
-    logger.info(f"Noise Generation Executed In {t.elapsed*1000:.2f} Miliseconds!")
+        W, H = 256, 256
+
+        xs, ys = torch.meshgrid(
+            torch.linspace(0, 12, W, device=noise_generator.device),
+            torch.linspace(0, 12, H, device=noise_generator.device),
+            indexing="ij"
+        )
+        perm = torch.randperm(256, device=noise_generator.device)  # 256
+        perm = torch.cat([perm, perm])  # 512
+
+        noise = noise_generator.simplex_noise_2d(xs, ys, perm)
+    logger.info(f"Noise Generation Executed In {t.elapsed * 1000:.2f} Miliseconds!")
     tensor_to_image(
-        noise,
-        config.OUTPUT_PATH,
-        config.COLOR_MAP,
-        150,
-        False
+        noise, config.OUTPUT_PATH, config.COLOR_MAP, config.DPI, config.SHOW_PLOT
     )
