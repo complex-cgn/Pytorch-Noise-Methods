@@ -190,7 +190,7 @@ class Noise:
 
     def white_noise_2d(self):
         return torch.empty((self.height, self.width), device=self.device).uniform_()
-    
+
     @staticmethod
     def grad(hash, x, y):
         # 8 yönlü gradient
@@ -198,7 +198,7 @@ class Noise:
         u = torch.where(h < 4, x, y)
         v = torch.where(h < 4, y, x)
         return torch.where((h & 1) == 0, u, -u) + torch.where((h & 2) == 0, v, -v)
-    
+
     def simplex_noise_2d(self, x, y, perm):
         """
         x, y : tensor (aynı shape)
@@ -229,24 +229,23 @@ class Noise:
         x2 = x0 - 1.0 + 2.0 * G2
         y2 = y0 - 1.0 + 2.0 * G2
 
-        ii = (i.long() & 255)
-        jj = (j.long() & 255)
+        ii = i.long() & 255
+        jj = j.long() & 255
 
         gi0 = perm[ii + perm[jj]]
         gi1 = perm[ii + i1 + perm[jj + j1]]
         gi2 = perm[ii + 1 + perm[jj + 1]]
 
         # Katkılar
-        t0 = 0.5 - x0*x0 - y0*y0
-        t1 = 0.5 - x1*x1 - y1*y1
-        t2 = 0.5 - x2*x2 - y2*y2
+        t0 = 0.5 - x0 * x0 - y0 * y0
+        t1 = 0.5 - x1 * x1 - y1 * y1
+        t2 = 0.5 - x2 * x2 - y2 * y2
 
-        n0 = torch.where(t0 < 0, 0.0, (t0 ** 4) * self.grad(gi0, x0, y0))
-        n1 = torch.where(t1 < 0, 0.0, (t1 ** 4) * self.grad(gi1, x1, y1))
-        n2 = torch.where(t2 < 0, 0.0, (t2 ** 4) * self.grad(gi2, x2, y2))
+        n0 = torch.where(t0 < 0, 0.0, (t0**4) * self.grad(gi0, x0, y0))
+        n1 = torch.where(t1 < 0, 0.0, (t1**4) * self.grad(gi1, x1, y1))
+        n2 = torch.where(t2 < 0, 0.0, (t2**4) * self.grad(gi2, x2, y2))
 
         return 70.0 * (n0 + n1 + n2)
-
 
 
 if __name__ == "__main__":
@@ -259,18 +258,24 @@ if __name__ == "__main__":
         config.SEED,
     )
 
+    optimized_noise = torch.compile(noise_generator.fractal_noise_2d)
+    _ = optimized_noise(config.OCTAVES)
+
     with Timer() as t:
-        W, H = 256, 256
+        """W, H = 256, 256
 
         xs, ys = torch.meshgrid(
             torch.linspace(0, 12, W, device=noise_generator.device),
             torch.linspace(0, 12, H, device=noise_generator.device),
-            indexing="ij"
+            indexing="ij",
         )
         perm = torch.randperm(256, device=noise_generator.device)  # 256
         perm = torch.cat([perm, perm])  # 512
 
-        noise = noise_generator.simplex_noise_2d(xs, ys, perm)
+        noise = noise_generator.simplex_noise_2d(xs, ys, perm)"""
+
+        noise = optimized_noise(config.OCTAVES)
+
     logger.info(f"Noise Generation Executed In {t.elapsed * 1000:.2f} Miliseconds!")
     tensor_to_image(
         noise, config.OUTPUT_PATH, config.COLOR_MAP, config.DPI, config.SHOW_PLOT
