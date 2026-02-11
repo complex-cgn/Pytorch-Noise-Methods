@@ -193,19 +193,40 @@ class Noise:
 
     @staticmethod
     def grad(hash, x, y):
-        # 8 yönlü gradient
+        """
+        Compute the 2D gradient contribution for Simplex noise.
+
+        Selects a gradient direction based on the hashed value and
+        returns the dot-product-like contribution between the selected
+        gradient and the input coordinate offsets (x, y).
+
+        Args:
+            hash (Tensor or int): Hashed gradient index.
+            x (Tensor): X offset from simplex corner.
+            y (Tensor): Y offset from simplex corner.
+
+        Returns:
+            Tensor: Gradient contribution value.
+        """
+
         h = hash & 7
         u = torch.where(h < 4, x, y)
         v = torch.where(h < 4, y, x)
         return torch.where((h & 1) == 0, u, -u) + torch.where((h & 2) == 0, v, -v)
 
-    def simplex_noise_2d(self, x, y, perm):
+    def simplex_noise_2d(self, x, y, perm) -> torch.Tensor:
         """
-        x, y : tensor (aynı shape)
-        perm : 512 boyutlu permutation table
+        Generate 2D Simplex noise value for given coordinates.
+
+        Args:
+            x (float): X coordinate in noise space.
+            y (float): Y coordinate in noise space.
+            perm (Sequence[int]): Permutation table used for gradient hashing.
+
+        Returns:
+            float: Noise value typically in range [-1, 1].
         """
 
-        # Skew / Unskew faktörleri
         F2 = 0.5 * (math.sqrt(3.0) - 1.0)
         G2 = (3.0 - math.sqrt(3.0)) / 6.0
 
@@ -220,7 +241,6 @@ class Noise:
         x0 = x - X0
         y0 = y - Y0
 
-        # Simplex köşesi seçimi
         i1 = (x0 > y0).int()
         j1 = 1 - i1
 
@@ -236,7 +256,6 @@ class Noise:
         gi1 = perm[ii + i1 + perm[jj + j1]]
         gi2 = perm[ii + 1 + perm[jj + 1]]
 
-        # Katkılar
         t0 = 0.5 - x0 * x0 - y0 * y0
         t1 = 0.5 - x1 * x1 - y1 * y1
         t2 = 0.5 - x2 * x2 - y2 * y2
@@ -262,21 +281,19 @@ if __name__ == "__main__":
     _ = optimized_noise(config.OCTAVES)
 
     with Timer() as t:
-        """W, H = 256, 256
-
         xs, ys = torch.meshgrid(
-            torch.linspace(0, 12, W, device=noise_generator.device),
-            torch.linspace(0, 12, H, device=noise_generator.device),
+            torch.linspace(0, 12, config.WIDTH, device=noise_generator.device),
+            torch.linspace(0, 12, config.HEIGHT, device=noise_generator.device),
             indexing="ij",
         )
-        perm = torch.randperm(256, device=noise_generator.device)  # 256
-        perm = torch.cat([perm, perm])  # 512
+        perm = torch.randperm(256, device=noise_generator.device)
+        perm = torch.cat([perm, perm])
 
-        noise = noise_generator.simplex_noise_2d(xs, ys, perm)"""
+        noise = noise_generator.simplex_noise_2d(xs, ys, perm)
 
-        noise = optimized_noise(config.OCTAVES)
+        # noise = optimized_noise(config.OCTAVES)
 
     logger.info(f"Noise Generation Executed In {t.elapsed * 1000:.2f} Miliseconds!")
     tensor_to_image(
-        noise, config.OUTPUT_PATH, config.COLOR_MAP, config.DPI, config.SHOW_PLOT
+        noise, "Simplex Noise", config.OUTPUT_PATH, config.COLOR_MAP, config.DPI, config.SHOW_PLOT
     )

@@ -27,6 +27,7 @@ python -m src.core.perlin
 - **Perlin Noise**  
 - **Fractal Noise**  
 - **White Noise**  
+- **Simplex Noise**
 
 > More noise types will be added in future updates
 

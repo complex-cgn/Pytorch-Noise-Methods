@@ -10,6 +10,7 @@ logger = logging.getLogger(__name__)
 
 def tensor_to_image(
     image_tensor: torch.Tensor,
+    plot_title: str,
     output_path: str,
     color_map: str,
     dpi: int,
@@ -31,7 +32,7 @@ def tensor_to_image(
     plt.figure(figsize=(2, 2))
     plt.imshow(image_tensor.cpu().numpy(), cmap=color_map, origin="upper")
     plt.axis("off")
-    plt.title("Perlin Noise")
+    plt.title(plot_title)
     plt.savefig(output_path, dpi=dpi)
 
     if show_plot:
