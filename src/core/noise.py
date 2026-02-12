@@ -5,7 +5,7 @@ from typing import Optional
 
 import torch
 
-from .. import config
+from ..settings import settings
 from ..utils.tensor_to_image import tensor_to_image
 from ..utils.timer import Timer
 
@@ -271,19 +271,23 @@ if __name__ == "__main__":
     logger.info("Generating Perlin noise...")
 
     noise_generator = Noise(
-        config.WIDTH,
-        config.HEIGHT,
-        config.SCALE,
-        config.SEED,
+        settings.noise_options.width,
+        settings.noise_options.height,
+        settings.noise_options.scale,
+        settings.noise_options.seed,
     )
 
     optimized_noise = torch.compile(noise_generator.fractal_noise_2d)
-    _ = optimized_noise(config.OCTAVES)
+    _ = optimized_noise(settings.noise_options.num_octaves)
 
     with Timer() as t:
         xs, ys = torch.meshgrid(
-            torch.linspace(0, 12, config.WIDTH, device=noise_generator.device),
-            torch.linspace(0, 12, config.HEIGHT, device=noise_generator.device),
+            torch.linspace(
+                0, 12, settings.noise_options.width, device=noise_generator.device
+            ),
+            torch.linspace(
+                0, 12, settings.noise_options.height, device=noise_generator.device
+            ),
             indexing="ij",
         )
         perm = torch.randperm(256, device=noise_generator.device)
@@ -295,5 +299,10 @@ if __name__ == "__main__":
 
     logger.info(f"Noise Generation Executed In {t.elapsed * 1000:.2f} Miliseconds!")
     tensor_to_image(
-        noise, "Simplex Noise", config.OUTPUT_PATH, config.COLOR_MAP, config.DPI, config.SHOW_PLOT
+        noise,
+        "Simplex Noise",
+        settings.render_options.output_path,
+        settings.render_options.color_map,
+        settings.render_options.export_dpi,
+        settings.render_options.show_plot,
     )
