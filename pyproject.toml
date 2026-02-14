@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cgn_project"
+version = "0.1.0"
+description = "Pytorch Noise Engine"
+authors = [
+    { name="CGN" }
+]
+readme = "README.md"
+requires-python = ">=3.10"
+
+dependencies = [
+    "torch",
+    "matplotlib",
+    "numpy",
+    "pydantic",
+    "pyyaml"
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+noise_engine = ["settings.yaml"]
+
+[project.scripts]
+cgn = "noise_engine.__main__:main"

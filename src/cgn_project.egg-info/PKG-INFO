@@ -1,3 +1,18 @@
+Metadata-Version: 2.4
+Name: cgn_project
+Version: 0.1.0
+Summary: Pytorch Noise Engine
+Author: CGN
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: torch
+Requires-Dist: matplotlib
+Requires-Dist: numpy
+Requires-Dist: pydantic
+Requires-Dist: pyyaml
+Dynamic: license-file
+
 # 🌫️ Pytorch-Noise-Methods
 
 This repository enables **easy use of numerous noise formulas** with **PyTorch implementation in Python**.  

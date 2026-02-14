@@ -8,7 +8,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-def tensor_to_image(
+def to_image(
     image_tensor: torch.Tensor,
     plot_title: str,
     output_path: str,
