@@ -1,0 +1,52 @@
+Metadata-Version: 2.4
+Name: noise_project
+Version: 0.1.0
+Summary: Pytorch Noise Engine
+Author: CGN
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: torch
+Requires-Dist: matplotlib
+Requires-Dist: numpy
+Requires-Dist: pydantic
+Requires-Dist: pyyaml
+Dynamic: license-file
+
+# 🌫️ Pytorch-Noise-Methods
+
+This repository enables **easy use of numerous noise formulas** with **PyTorch implementation in Python**.  
+It operates with **minimal latency** thanks to specialized optimization techniques for **GPU** and **high-speed matrix operations**.
+
+## Features:
+
+- **Easy operation and integration for ML.**
+- **Parallel computing engine thanks to GPU-accelerated matrix multiplications.**
+- **Easy visualization with matplotlib.**
+
+### To run the code use this command 👇
+While in the project root directory (src), copy the code below and execute it.
+
+```bash
+python -m src
+```
+
+## Preview:
+<img src="outputs/noise.png" width="300">
+
+## Try In Collab 👇
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/12vHh-88utMmqnkKY69_glVnV6jV6mTNd?)
+
+## Supported Noise Types:
+
+- **Perlin Noise**  
+- **Fractal Noise**  
+- **White Noise**  
+- **Simplex Noise**
+
+> More noise types will be added in future updates
+
+
+## 📜 License
+
+This repository is licensed under the **[GNU General Public License v3.0 (GPL-3.0)](https://www.gnu.org/licenses/gpl-3.0.en.html)**.

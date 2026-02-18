@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="4adb66b1-e9fa-47e7-bec8-f64987156a8e" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/Pytorch-Noise-Methods.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/lib/noise_engine/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/noise_engine/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/lib/noise_engine/__main__.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/lib/noise_engine/core/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/noise_engine/core/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/lib/noise_engine/core/noise.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/noise_engine/core/noise.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/lib/noise_engine/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/noise_engine/settings.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/lib/noise_engine/settings.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/noise_engine/settings.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/lib/noise_engine/utils/__init__.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/lib/noise_engine/utils/tensor.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/lib/noise_engine/utils/timer.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/noise_engine/utils/timer.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/noise.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pyproject.toml" beforeDir="false" afterPath="$PROJECT_DIR$/pyproject.toml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/cgn_project.egg-info/PKG-INFO" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/cgn_project.egg-info/SOURCES.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/cgn_project.egg-info/dependency_links.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/cgn_project.egg-info/entry_points.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/cgn_project.egg-info/requires.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/cgn_project.egg-info/top_level.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/noise_engine/__main__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/noise_engine/__main__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/noise_engine/requirenments.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/outputs/noise.png" beforeDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
+  "lastFilter": {
+    "state": "OPEN",
+    "assignee": "complex-cgn"
+  }
+}]]></component>
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/complex-cgn/Pytorch-Noise-Methods.git",
+    "accountId": "5d53f977-2335-48a3-86a6-ecd2eacacaac"
+  }
+}]]></component>
+  <component name="McpProjectServerCommands">
+    <commands />
+    <urls />
+  </component>
+  <component name="ProjectColorInfo"><![CDATA[{
+  "customColor": "",
+  "associatedIndex": 4
+}]]></component>
+  <component name="ProjectId" id="39lJRy4zCinLy19KkQI0413yVeI" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.MCP Project settings loaded": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
+    "ai.playground.ignore.import.keys.banner.in.settings": "true",
+    "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
+    "git-widget-placeholder": "main",
+    "junie.onboarding.icon.badge.shown": "true",
+    "last_opened_file_path": "/home/cgn-b650-s2h/Belgeler/MyCODE/Secret Plans",
+    "to.speed.mode.migration.done": "true",
+    "vue.rearranger.settings.migration": "true"
+  }
+}]]></component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-js-predefined-d6986cc7102b-9b0f141eb926-JavaScript-PY-253.30387.173" />
+        <option value="bundled-python-sdk-4762d8aabb82-6d6dccd035ac-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-253.30387.173" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="4adb66b1-e9fa-47e7-bec8-f64987156a8e" name="Changes" comment="" />
+      <created>1771264720962</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1771264720962</updated>
+      <workItem from="1771264722353" duration="46000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+</project>

@@ -1,0 +1,13 @@
+noise_options:
+  width: 4096
+  height: 4096
+  scale: 4.0
+  num_octaves: 8
+  seed: null
+  
+render_options:
+  color_map: terrain
+  export_dpi: 150
+  show_plot: False
+  output_path: outputs/noise.png
+  
