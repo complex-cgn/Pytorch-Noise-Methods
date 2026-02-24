@@ -2,4 +2,5 @@ torch
 matplotlib
 numpy
 pydantic
+rich
 pyyaml

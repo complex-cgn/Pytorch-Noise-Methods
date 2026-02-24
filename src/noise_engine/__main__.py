@@ -1,6 +1,8 @@
 import logging
 
+import click
 import torch
+from rich.logging import RichHandler
 
 from .core.noise import Noise
 from .settings import settings
@@ -8,11 +10,17 @@ from .utils import tensor
 from .utils.timer import Timer
 
 
-def main():
-    logging.basicConfig(level=logging.INFO)
-    logger = logging.getLogger(__name__)
+def main() -> None:
 
-    logger.info("Generating Perlin noise...")
+    logging.basicConfig(
+        level="DEBUG",
+        format="%(message)s",
+        datefmt="[%X]",
+        handlers=[RichHandler(rich_tracebacks=True, tracebacks_suppress=[click])],
+    )
+
+    logging.getLogger("matplotlib").setLevel(logging.WARNING)
+    logging.info("Generating Perlin noise...")
 
     noise_generator = Noise(
         settings.noise_options.width,
@@ -25,23 +33,9 @@ def main():
     _ = optimized_noise(settings.noise_options.num_octaves)
 
     with Timer() as t:
-        xs, ys = torch.meshgrid(
-            torch.linspace(
-                0, 12, settings.noise_options.width, device=noise_generator.device
-            ),
-            torch.linspace(
-                0, 12, settings.noise_options.height, device=noise_generator.device
-            ),
-            indexing="ij",
-        )
-        perm = torch.randperm(256, device=noise_generator.device)
-        perm = torch.cat([perm, perm])
+        noise = optimized_noise(settings.noise_options.num_octaves)
 
-        noise = noise_generator.simplex_noise_2d(xs, ys, perm)
-
-        # noise = optimized_noise(config.OCTAVES)
-
-    logger.info(f"Noise Generation Executed In {t.elapsed * 1000:.2f} Miliseconds!")
+    logging.info(f"Noise Generation Executed In {t.elapsed * 1000:.2f} Miliseconds!")
     tensor.to_image(
         noise,
         "Simplex Noise",

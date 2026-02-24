@@ -10,6 +10,7 @@ Requires-Dist: torch
 Requires-Dist: matplotlib
 Requires-Dist: numpy
 Requires-Dist: pydantic
+Requires-Dist: rich
 Requires-Dist: pyyaml
 Dynamic: license-file
 

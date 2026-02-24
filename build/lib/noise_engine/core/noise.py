@@ -29,7 +29,6 @@ class Noise:
             "cuda" if torch.cuda.is_available() else "cpu"
         )
     )
-    grayscale: bool = True
 
     # Pre-allocated noise values for performance
     _n00: torch.Tensor = field(init=False)
@@ -92,11 +91,13 @@ class Noise:
         n00, n10, n01, n11 = self._n00, self._n10, self._n01, self._n11
 
         # Create coordinate grid
+        logging.debug(f"Computing noise grid with scale {scale} and seed {seed}")
         x_lin = torch.linspace(0, scale, self.width, device=self.device)
         y_lin = torch.linspace(0, scale, self.height, device=self.device)
         y, x = torch.meshgrid(y_lin, x_lin, indexing="ij")
 
         # Generate random rotation matrix
+        logging.debug("Generating random rotation matrix for noise gradients")
         grid_w = int(scale) + 2
         grid_h = int(scale) + 2
         rotation = torch.empty((grid_h, grid_w), device=self.device).uniform_(
@@ -104,6 +105,7 @@ class Noise:
         )
 
         # Convert coordinates to grid indices
+        logging.debug("Calculating grid indices and fractional offsets")
         x0 = x.to(torch.int64)
         y0 = y.to(torch.int64)
         x1 = x0 + 1
@@ -114,6 +116,7 @@ class Noise:
         yf = y - y0
 
         # Compute dot products for each corner
+        logging.debug("Computing gradient contributions for simplex corners")
         r00 = rotation[y0, x0]
         r10 = rotation[y0, x1]
         r01 = rotation[y1, x0]
@@ -133,6 +136,7 @@ class Noise:
         n11 = c11 * xf0 + s11 * yf0
 
         # Interpolate
+        logging.debug("Performing fade and linear interpolation")
         u = self._fade(xf)
         value = self._lerp(
             self._lerp(n00, n10, u), self._lerp(n01, n11, u), self._fade(yf)
@@ -164,6 +168,7 @@ class Noise:
         current_amp = 0.1
 
         for octave in range(octaves):
+            logging.debug(f"Generating octave {octave + 1}/{octaves}")
             layer_seed = self.seed + octave if self.seed is not None else None
 
             layer = self._compute_noise_grid(layer_seed, current_scale)
@@ -182,6 +187,7 @@ class Noise:
         return total_noise
 
     def white_noise_2d(self):
+        logging.debug("Generating white noise")
         return torch.empty((self.height, self.width), device=self.device).uniform_()
 
     @staticmethod
@@ -223,24 +229,31 @@ class Noise:
         g2 = (3.0 - math.sqrt(3.0)) / 6.0
 
         # Skew transformation for simplex grid
+        logging.debug("Applying skew transformation for simplex grid")
         shift_factor = (x + y) * f2
         grid_i = torch.floor(x + shift_factor)
         grid_j = torch.floor(y + shift_factor)
 
         # Unskew operation to get actual coordinates
+        logging.debug(
+            "Applying unskew transformation to get simplex corner coordinates"
+        )
         offset = (grid_i + grid_j) * g2
         simplex_corner_x = grid_i - offset
         simplex_corner_y = grid_j - offset
 
         # Fractional distances from simplex corner
+        logging.debug("Calculating fractional offsets from simplex corner")
         frac_x = x - simplex_corner_x
         frac_y = y - simplex_corner_y
 
         # Identify which simplex corner is closer
+        logging.debug("Determining simplex corner ordering")
         i1 = (simplex_corner_x > simplex_corner_y).int()
         j1 = 1 - i1
 
         # Compute coordinates relative to the three relevant simplex corners
+        logging.debug("Computing coordinates relative to simplex corners")
         x0, y0 = simplex_corner_x, simplex_corner_y
         x1 = simplex_corner_x - i1 + g2
         y1 = simplex_corner_y - j1 + g2
@@ -248,6 +261,7 @@ class Noise:
         y2 = simplex_corner_y - 1.0 + 2.0 * g2
 
         # Hash gradient indices using permutation table
+        logging.debug("Hashing gradient indices using permutation table")
         ii = grid_i.long() & 255
         jj = grid_j.long() & 255
 
@@ -256,11 +270,13 @@ class Noise:
         grad_idx_2 = perm[ii + 1 + perm[jj + 1]]
 
         # Compute kernel values (radial basis function)
+        logging.debug("Computing kernel values for simplex corners")
         kernel_val_0 = 0.5 - x0 * x0 - y0 * y0
         kernel_val_1 = 0.5 - x1 * x1 - y1 * y1
         kernel_val_2 = 0.5 - x2 * x2 - y2 * y2
 
         # Gradient contributions from each simplex corner
+        logging.debug("Calculating gradient contributions from simplex corners")
         contrib_0 = torch.where(
             kernel_val_0 < 0, 0.0, (kernel_val_0**4) * self.grad(grad_idx_0, x0, y0)
         )
