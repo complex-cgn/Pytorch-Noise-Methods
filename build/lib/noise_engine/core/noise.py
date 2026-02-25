@@ -17,7 +17,6 @@ class Noise:
         scale: Spatial scale of the noise
         seed: Random seed for reproducibility
         device: Device to use for computation (cuda/cpu)
-        grayscale: Whether to generate grayscale noise
     """
 
     width: int

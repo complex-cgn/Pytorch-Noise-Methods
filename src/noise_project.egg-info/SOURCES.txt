@@ -1,14 +1,10 @@
 LICENSE
 README.md
 pyproject.toml
-src/noise_engine/__init__.py
 src/noise_engine/__main__.py
 src/noise_engine/settings.py
 src/noise_engine/settings.yaml
-src/noise_engine/core/__init__.py
 src/noise_engine/core/noise.py
-src/noise_engine/utils/__init__.py
-src/noise_engine/utils/console.py
 src/noise_engine/utils/tensor.py
 src/noise_engine/utils/timer.py
 src/noise_project.egg-info/PKG-INFO
