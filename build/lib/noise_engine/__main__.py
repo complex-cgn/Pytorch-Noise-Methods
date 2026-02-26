@@ -1,12 +1,12 @@
 import logging
 
 import click
-import torch
-from noise_engine.core.noise import Noise
+from rich.logging import RichHandler
+
+import noise_engine.core.noise
 from noise_engine.settings import settings
 from noise_engine.utils import tensor
 from noise_engine.utils.timer import Timer
-from rich.logging import RichHandler
 
 logging.basicConfig(
     level="DEBUG",
@@ -22,22 +22,17 @@ def main() -> None:
 
     logging.info("Generating Perlin noise...")
 
-    noise_generator = Noise(
-        settings.noise.width,
-        settings.noise.height,
-        settings.noise.scale,
-        settings.noise.seed,
-    )
-
-    optimized_noise = torch.compile(noise_generator.fractal_noise_2d)
-    _ = optimized_noise(settings.noise.num_octaves)
-
     with Timer() as t:
-        noise = optimized_noise(settings.noise.num_octaves)
+        output = noise_engine.core.noise.fractal_noise_2d(
+            settings.noise.num_octaves,
+            persistence=0.5,
+            lacunarity=2.0,
+            turbulence=False,
+        )
 
     logging.info(f"Noise Generation Executed In {t.elapsed * 1000:.2f} Miliseconds!")
     tensor.to_image(
-        noise,
+        output,
         "Simplex Noise",
         settings.render.output_path,
         settings.render.color_map,
