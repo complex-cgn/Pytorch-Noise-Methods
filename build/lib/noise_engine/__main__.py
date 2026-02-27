@@ -3,7 +3,7 @@ import logging
 import click
 from rich.logging import RichHandler
 
-import noise_engine.core.noise
+import noise_engine.core.noise as noise
 from noise_engine.settings import settings
 from noise_engine.utils import tensor
 from noise_engine.utils.timer import Timer
@@ -23,17 +23,18 @@ def main() -> None:
     logging.info("Generating Perlin noise...")
 
     with Timer() as t:
-        output = noise_engine.core.noise.fractal_noise_2d(
-            settings.noise.num_octaves,
+        output = noise.FractalNoise2D(
+            scale=settings.noise.scale,
+            octaves=settings.noise.num_octaves,
             persistence=0.5,
             lacunarity=2.0,
             turbulence=False,
-        )
+        )()
 
     logging.info(f"Noise Generation Executed In {t.elapsed * 1000:.2f} Miliseconds!")
     tensor.to_image(
         output,
-        "Simplex Noise",
+        "Fractal Noise",
         settings.render.output_path,
         settings.render.color_map,
         settings.render.export_dpi,
