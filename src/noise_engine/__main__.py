@@ -23,14 +23,16 @@ def main() -> None:
     logging.info("Generating Perlin noise...")
 
     with Timer() as t:
-        output = noise.FractalNoise2D(
+        """output = noise.FractalNoise2D(
             scale=settings.noise.scale,
             octaves=settings.noise.num_octaves,
-            persistence=0.5,
-            lacunarity=2.0,
-            turbulence=False,
+            shape=(settings.noise.height, settings.noise.width),
+            seed=settings.noise.seed,
+        )()"""
+        output = noise.WhiteNoise2D(
+            shape=(settings.noise.height, settings.noise.width),
         )()
-
+        
     logging.info(f"Noise Generation Executed In {t.elapsed * 1000:.2f} Miliseconds!")
     tensor.to_image(
         output,

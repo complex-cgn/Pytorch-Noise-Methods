@@ -6,7 +6,7 @@ noise_options:
   seed: null
   
 render_options:
-  color_map: terrain
+  color_map: "gray"
   export_dpi: 150
   show_plot: False
   output_path: outputs/noise.png

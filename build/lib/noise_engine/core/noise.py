@@ -1,11 +1,10 @@
 import logging
-from typing import Optional
+from typing import Optional, ClassVar
 
 import torch
 from dataclasses import dataclass, field
 
 from noise_engine.core.device import device
-from noise_engine.settings import settings
 
 
 def fade(t: torch.Tensor) -> torch.Tensor:
@@ -16,6 +15,7 @@ def fade(t: torch.Tensor) -> torch.Tensor:
 
     Args:
         t: Input tensor in range [0, 1]
+
     Returns:
         Smoothed tensor in range [0, 1]
     """
@@ -38,31 +38,16 @@ def lerp(a: torch.Tensor, b: torch.Tensor, t: torch.Tensor) -> torch.Tensor:
 
 
 @dataclass
-class PerlinState:
-    shape: tuple[int, int]
-    device: torch.device = device
-    grids: dict[str, torch.Tensor] = field(init=False, repr=False)
-
-    def __post_init__(self):
-        self.grids = {
-            "n00": torch.empty(self.shape, device=self.device),
-            "n10": torch.empty(self.shape, device=self.device),
-            "n01": torch.empty(self.shape, device=self.device),
-            "n11": torch.empty(self.shape, device=self.device),
-        }
-
-
-@dataclass
 class Perlin2D:
     scale: float
+    shape: tuple[int, int]
     seed: Optional[int] = None
-    shape: tuple[int, int] = (settings.noise.width, settings.noise.height)
 
-    # Precompute noise state to avoid redundant allocations during multi-octave generation
-    state: PerlinState = field(init=False, repr=False)
-
-    def __post_init__(self):
-        self.state = PerlinState(self.shape, device=device)
+    # Buffer tensors for gradient contributions at corners (initialized in __call__)
+    _n00: ClassVar[torch.Tensor] = field(init=False, repr=False)
+    _n01: ClassVar[torch.Tensor] = field(init=False, repr=False)
+    _n10: ClassVar[torch.Tensor] = field(init=False, repr=False)
+    _n11: ClassVar[torch.Tensor] = field(init=False, repr=False)
 
     def __call__(
         self,
@@ -78,17 +63,17 @@ class Perlin2D:
             Noise tensor of shape (height, width)
         """
 
-        n00 = self.state.grids["n00"]
-        n10 = self.state.grids["n10"]
-        n01 = self.state.grids["n01"]
-        n11 = self.state.grids["n11"]
+        self._n00 = torch.empty(0, device=device).uniform_()
+        self._n01 = torch.empty(0, device=device).uniform_()
+        self._n10 = torch.empty(0, device=device).uniform_()
+        self._n11 = torch.empty(0, device=device).uniform_()
 
         # Create coordinate grid
         logging.debug(
             f"Computing noise grid with scale {self.scale} and seed {self.seed}"
         )
-        x_lin = torch.linspace(0.0, self.scale, settings.noise.width, device=device)
-        y_lin = torch.linspace(0.0, self.scale, settings.noise.height, device=device)
+        x_lin = torch.linspace(0.0, self.scale, self.shape[1], device=device)
+        y_lin = torch.linspace(0.0, self.scale, self.shape[0], device=device)
         y, x = torch.meshgrid(y_lin, x_lin, indexing="ij")
 
         # Generate random rotation matrix
@@ -125,17 +110,17 @@ class Perlin2D:
         xf0 = xf - 1
         yf0 = yf - 1
 
-        n00 = c00 * xf + s00 * yf
-        n10 = c10 * xf0 + s10 * yf
-        n01 = c01 * xf + s01 * yf0
-        n11 = c11 * xf0 + s11 * yf0
+        self._n00 = c00 * xf + s00 * yf
+        self._n10 = c10 * xf0 + s10 * yf
+        self._n01 = c01 * xf + s01 * yf0
+        self._n11 = c11 * xf0 + s11 * yf0
 
         # Interpolate
         logging.debug("Performing fade and linear interpolation")
         u = fade(xf)
         value = lerp(
-            lerp(n00, n10, u),
-            lerp(n01, n11, u),
+            lerp(self._n00, self._n10, u),
+            lerp(self._n01, self._n11, u),
             fade(yf),
         )
 
@@ -146,11 +131,11 @@ class Perlin2D:
 class FractalNoise2D:
     scale: float
     octaves: int
-    persistence: float
-    lacunarity: float
-    turbulence: bool
+    shape: tuple[int, int]
+    turbulence: bool = False
+    persistence: float = 0.5
+    lacunarity: float = 2.0
     seed: Optional[int] = None
-    shape: tuple[int, int] = (settings.noise.width, settings.noise.height)
 
     def __call__(self) -> torch.Tensor:
         """
@@ -165,19 +150,14 @@ class FractalNoise2D:
         Returns:
             Combined noise tensor of shape (height, width)
         """
-        total_noise = torch.zeros(
-            (settings.noise.height, settings.noise.width), device=device
-        )
-        current_scale = settings.noise.scale
+
+        total_noise = torch.zeros(self.shape, device=device)
+        current_scale = self.scale
         current_amp = 0.1
 
         for octave in range(self.octaves):
             logging.debug(f"Generating octave {octave + 1}/{self.octaves}")
-            layer_seed = (
-                settings.noise.seed + octave
-                if settings.noise.seed is not None
-                else None
-            )
+            layer_seed = self.seed + octave if self.seed is not None else None
 
             layer = Perlin2D(self.scale, seed=layer_seed, shape=self.shape)()
 
@@ -197,8 +177,13 @@ class FractalNoise2D:
 
 @dataclass
 class WhiteNoise2D:
-    width: int
-    height: int
+    shape: tuple[int, int]
+
+    _buffer: ClassVar[torch.Tensor] = field(init=False, repr=False)
+
+
+    def __post_init__(self):
+        self._buffer = torch.empty(self.shape, device=device)
 
     def __call__(self) -> torch.Tensor:
         """
@@ -207,5 +192,4 @@ class WhiteNoise2D:
         Returns:
             Noise tensor of shape (height, width) with values in [0, 1]
         """
-        logging.debug("Generating white noise")
-        return torch.empty((self.height, self.width), device=device).uniform_()
+        return self._buffer.uniform_()
