@@ -1,24 +1,34 @@
 import torch
 from contextlib import contextmanager
-from typing import Optional
-
-# Default device configuration
-DEFAULT_DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 
 
-def get_device(device_str: str = DEFAULT_DEVICE) -> torch.device:
+def get_default_device() -> torch.device:
+    """
+    Get the default device (CUDA if available, otherwise CPU).
+
+    Returns:
+        torch.device: Default device object.
+    """
+    return torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+
+def get_device(device_str: str | torch.device = None) -> torch.device:
     """
     Get and validate a PyTorch device.
 
     Args:
-        device_str: Device string ('cpu', 'cuda', 'cuda:0', etc.)
+        device_str: Device string ('cpu', 'cuda', 'cuda:0', etc.) or torch.device object.
+                   Defaults to CUDA if available, otherwise CPU.
 
     Returns:
-        Validated torch.device object
+        Validated torch.device object.
 
     Raises:
-        ValueError: If device is not available
+        ValueError: If CUDA is requested but not available.
     """
+    if device_str is None:
+        return get_default_device()
+
     if isinstance(device_str, torch.device):
         return device_str
 
@@ -26,34 +36,26 @@ def get_device(device_str: str = DEFAULT_DEVICE) -> torch.device:
 
     if device.type == "cuda" and not torch.cuda.is_available():
         raise ValueError(
-            f"CUDA not available. Using 'cpu' instead.\n"
-            f"Available devices: {torch.cuda.get_device_name(0) if torch.cuda.is_available() else 'CPU only'}"
+            "CUDA not available. Please use 'cpu' or omit device argument for auto-detection."
         )
 
     return device
 
 
-# Global default device (for backward compatibility)
-device = get_device(DEFAULT_DEVICE)
-
-
 @contextmanager
-def use_device(device_str: str):
+def use_device(device_str: str | torch.device):
     """
     Context manager for temporarily switching devices.
 
     Args:
-        device_str: Target device string
+        device_str: Target device string or torch.device object.
+
+    Yields:
+        torch.device: The validated device object.
 
     Example:
-        with use_device("cpu"):
-            tensor = torch.randn(100).to("cpu")
-        # Back to default device after context
+        >>> with use_device("cpu") as dev:
+        ...     tensor = torch.randn(100, device=dev)
     """
-    global device
-    original_device = device
-    try:
-        device = get_device(device_str)
-        yield device
-    finally:
-        device = original_device
+    device = get_device(device_str)
+    yield device
