@@ -27,7 +27,9 @@ class Dynamic3DPlotter:
 
         ndim = tensor.ndim
         if ndim not in (1, 2, 3):
-            raise ValueError(f"Only 1D, 2D, or 3D tensors are supported, given: {ndim}D")
+            raise ValueError(
+                f"Only 1D, 2D, or 3D tensors are supported, given: {ndim}D"
+            )
 
         if ndim == 1:
             tensor = tensor[np.newaxis, np.newaxis, :]
@@ -40,8 +42,8 @@ class Dynamic3DPlotter:
         dispatch = {
             "scatter": lambda: self._plot_scatter(tensor, D, H, W),
             "surface": lambda: self._plot_surface(tensor, H, W),
-            "voxel":   lambda: self._plot_voxel(tensor),
-            "bar":     lambda: self._plot_bar(tensor),
+            "voxel": lambda: self._plot_voxel(tensor),
+            "bar": lambda: self._plot_bar(tensor),
         }
 
         if mode not in dispatch:

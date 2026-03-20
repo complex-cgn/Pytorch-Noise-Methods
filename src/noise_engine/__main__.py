@@ -24,7 +24,6 @@ def main() -> None:
     logging.info("Generating Perlin noise...")
 
     with Timer() as t:
-
         output = noise.FractalNoise3D(
             scale=settings.noise.scale,
             octaves=settings.noise.num_octaves,

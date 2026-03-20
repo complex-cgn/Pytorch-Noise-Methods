@@ -1,5 +1,4 @@
 import torch
-from typing import Union
 
 # Quintic fade curve coefficients (Horner's method)
 FADE_C_4 = 6.0  # t^4 coefficient

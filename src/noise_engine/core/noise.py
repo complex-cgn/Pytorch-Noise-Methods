@@ -2,15 +2,14 @@ import logging
 from typing import Optional, Tuple
 
 import torch
-from attrs import define
+from attrs import define, field
 
 from noise_engine.core.device import get_device
 from noise_engine.utils.noise_utils import fade, lerp
-from concurrent.futures import ThreadPoolExecutor
 
 
 # ============================================================================
-# PERLİN NOISE - SINGLE OCTAVE
+# PERLIN NOISE - SINGLE OCTAVE
 # ============================================================================
 
 
@@ -21,6 +20,14 @@ class _PerlinBase:
     scale: float
     shape: Tuple[int, ...]
     seed: Optional[int] = None
+
+    def __attrs_post_init__(self):
+        if len(self.shape) not in (1, 2, 3):
+            raise ValueError(f"Shape must be 1D, 2D, or 3D. Got {len(self.shape)}D")
+        if self.scale < 0:
+            raise ValueError("Scale must be positive.")
+        if self.seed is not None:
+            torch.manual_seed(self.seed)
 
 
 @define
@@ -154,17 +161,30 @@ class Perlin3D(_PerlinBase):
 
 
 @define
-class FractalNoise1D:
-    """Multi-octave 1D Perlin (fBm) noise generator."""
-
-    scale: float
+class _FractalNoiseBase:
     octaves: int
-    shape: tuple[int]
+    scale: float
+    shape: Tuple[int, ...]
+    seed: Optional[int] = None
     turbulence: bool = False
     persistence: float = 0.5
     lacunarity: float = 2.0
     turbulence_gamma: float = 0.5
-    seed: Optional[int] = None
+
+    def __attrs_post_init__(self):
+        if len(self.shape) not in (1, 2, 3):
+            raise ValueError(f"Shape must be 1D, 2D, or 3D. Got {len(self.shape)}D")
+        if self.scale < 0:
+            raise ValueError("Scale must be positive.")
+        if self.seed is not None:
+            torch.manual_seed(self.seed)
+        if self.octaves < 0:
+            raise ValueError("Octave must be positive.")
+
+
+@define
+class FractalNoise1D(_FractalNoiseBase):
+    """Multi-octave 1D Perlin (fBm) noise generator."""
 
     def __call__(self) -> torch.Tensor:
         logging.debug(
@@ -191,17 +211,8 @@ class FractalNoise1D:
 
 
 @define
-class FractalNoise2D:
+class FractalNoise2D(_FractalNoiseBase):
     """Multi-octave 2D Perlin (fBm) noise generator."""
-
-    scale: float
-    octaves: int
-    shape: tuple[int, int]
-    turbulence: bool = False
-    persistence: float = 0.5
-    lacunarity: float = 2.0
-    turbulence_gamma: float = 0.5
-    seed: Optional[int] = None
 
     def __call__(self) -> torch.Tensor:
         logging.debug(
@@ -228,17 +239,8 @@ class FractalNoise2D:
 
 
 @define
-class FractalNoise3D:
+class FractalNoise3D(_FractalNoiseBase):
     """Multi-octave 3D Perlin (fBm) noise generator."""
-
-    scale: float
-    octaves: int
-    shape: tuple[int, int, int]
-    turbulence: bool = False
-    persistence: float = 0.5
-    lacunarity: float = 2.0
-    turbulence_gamma: float = 0.5
-    seed: Optional[int] = None
 
     def __call__(self) -> torch.Tensor:
         logging.debug(
