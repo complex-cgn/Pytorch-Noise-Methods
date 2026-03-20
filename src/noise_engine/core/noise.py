@@ -5,7 +5,6 @@ import torch
 from attrs import define, field, validators
 
 from noise_engine.core.device import get_device
-from noise_engine.utils.noise_utils import fade, lerp
 
 
 # ============================================================================
@@ -28,6 +27,39 @@ class _PerlinBase:
             raise ValueError("Scale must be positive.")
         if self.seed is not None:
             torch.manual_seed(self.seed)
+
+    @staticmethod
+    def _fade(t: torch.Tensor) -> torch.Tensor:
+        """
+        Compute the quintic fade curve for smooth interpolation.
+
+        Uses Horner's method: t³ * (t² * 6 - 15*t + 10)
+        Equivalent to: 6t⁵ - 15t⁴ + 10t³
+
+        Args:
+            t: Input tensor in range [0, 1]
+
+        Returns:
+            Smoothed tensor in range [0, 1] with zero first and second derivatives at endpoints
+        """
+        return t * t * (t * (t * (t * 6.0 - 15.0) + 10.0))
+
+    @staticmethod
+    def _lerp(a: torch.Tensor, b: torch.Tensor, t: torch.Tensor) -> torch.Tensor:
+        """
+        Linear interpolation between two tensors.
+
+        Uses PyTorch's optimized implementation for better performance.
+
+        Args:
+            a: Start tensor
+            b: End tensor
+            t: Interpolation factor in range [0, 1]
+
+        Returns:
+            Interpolated tensor: a + t * (b - a)
+        """
+        return torch.lerp(a, b, t)
 
 
 @define
@@ -54,7 +86,7 @@ class Perlin1D(_PerlinBase):
         n0 = angles[x0].cos() * xf
         n1 = angles[x0 + 1].cos() * (xf - 1)
 
-        return lerp(n0, n1, fade(xf))
+        return self._lerp(n0, n1, self._fade(xf))
 
 
 class Perlin2D(_PerlinBase):
@@ -96,8 +128,10 @@ class Perlin2D(_PerlinBase):
         n11 = dot(y1, x1, xf - 1, yf - 1)
 
         # Bilinear interpolation
-        u = fade(xf)
-        return lerp(lerp(n00, n10, u), lerp(n01, n11, u), fade(yf))
+        u = self._fade(xf)
+        return self._lerp(
+            self._lerp(n00, n10, u), self._lerp(n01, n11, u), self._fade(yf)
+        )
 
 
 class Perlin3D(_PerlinBase):
@@ -149,10 +183,10 @@ class Perlin3D(_PerlinBase):
         n111 = dot3(z1, y1, x1, xf - 1, yf - 1, zf - 1)
 
         # Trilinear interpolation
-        u, v, w = fade(xf), fade(yf), fade(zf)
-        x_interp0 = lerp(lerp(n000, n100, u), lerp(n010, n110, u), v)
-        x_interp1 = lerp(lerp(n001, n101, u), lerp(n011, n111, u), v)
-        return lerp(x_interp0, x_interp1, w)
+        u, v, w = self._fade(xf), self._fade(yf), self._fade(zf)
+        x_interp0 = self._lerp(self._lerp(n000, n100, u), self._lerp(n010, n110, u), v)
+        x_interp1 = self._lerp(self._lerp(n001, n101, u), self._lerp(n011, n111, u), v)
+        return self._lerp(x_interp0, x_interp1, w)
 
 
 # ============================================================================
