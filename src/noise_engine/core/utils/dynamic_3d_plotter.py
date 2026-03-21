@@ -12,7 +12,17 @@ from typing import ClassVar, Any
 
 @define
 class Dynamic3DPlotter:
-    """Utility for dynamic 3D plotting of tensor data."""
+    """Utility for dynamic 3D plotting of tensor data.
+
+    This class provides methods for visualizing tensors in 3D space using matplotlib.
+    It supports multiple visualization modes including scatter plots, surface plots,
+    voxel plots, and bar charts.
+
+    Attributes:
+        VALID_MODES (set): Set of valid visualization modes.
+        fig (Any): Matplotlib figure object.
+        ax (Any): Matplotlib axes object.
+    """
 
     VALID_MODES: ClassVar[set] = set()
     fig: Any = field(default=None, init=False)

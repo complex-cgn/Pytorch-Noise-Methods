@@ -2,38 +2,22 @@
 Noise Engine SDK - Main module for easy access to all noise generation methods.
 """
 
-<<<<<<< HEAD
-from noise_engine.core.noise_opt.perlin_noise import (
-=======
 from noise_engine.core.noise_types.perlin import (
->>>>>>> e5d8bbe (feat: update noise generation to fractal noise with configurable octaves and version bump to 0.2.0)
     PerlinNoise1D,
     PerlinNoise2D,
     PerlinNoise3D,
 )
-<<<<<<< HEAD
-from noise_engine.core.noise_opt.simplex_noise import (
-=======
 from noise_engine.core.noise_types.simplex import (
->>>>>>> e5d8bbe (feat: update noise generation to fractal noise with configurable octaves and version bump to 0.2.0)
     SimplexNoise1D,
     SimplexNoise2D,
     SimplexNoise3D,
 )
-<<<<<<< HEAD
-from noise_engine.core.noise_opt.white_noise import (
-=======
 from noise_engine.core.noise_types.white import (
->>>>>>> e5d8bbe (feat: update noise generation to fractal noise with configurable octaves and version bump to 0.2.0)
     WhiteNoise1D,
     WhiteNoise2D,
     WhiteNoise3D,
 )
-<<<<<<< HEAD
-from noise_engine.core.noise_opt.fractal_noise import (
-=======
 from noise_engine.core.noise_types.fractal import (
->>>>>>> e5d8bbe (feat: update noise generation to fractal noise with configurable octaves and version bump to 0.2.0)
     FractalNoise1D,
     FractalNoise2D,
     FractalNoise3D,
@@ -58,7 +42,36 @@ __all__ = [
 
 # Create a convenient noise namespace
 class Noise:
-    """Convenient access to all noise generation methods."""
+    """Convenient access to all noise generation methods.
+
+    This class provides a clean namespace for accessing all noise generation classes.
+    It groups noise types by algorithm (Perlin, Simplex, White, Fractal) and dimensionality (1D, 2D, 3D).
+
+    Example:
+        >>> from noise_engine import noise
+        >>> # Create 2D Perlin noise
+        >>> perlin_noise = noise.Perlin2D(shape=(100, 100))
+        >>> # Create 3D Fractal noise
+        >>> fractal_noise = noise.FractalNoise3D(shape=(50, 50, 50), octaves=4)
+        >>> # Generate the noise
+        >>> result = perlin_noise()
+        >>> print(result.shape)
+        torch.Size([100, 100])
+
+    Attributes:
+        Perlin1D (class): 1D Perlin noise generator.
+        Perlin2D (class): 2D Perlin noise generator.
+        Perlin3D (class): 3D Perlin noise generator.
+        Simplex1D (class): 1D Simplex noise generator.
+        Simplex2D (class): 2D Simplex noise generator.
+        Simplex3D (class): 3D Simplex noise generator.
+        WhiteNoise1D (class): 1D White noise generator.
+        WhiteNoise2D (class): 2D White noise generator.
+        WhiteNoise3D (class): 3D White noise generator.
+        FractalNoise1D (class): 1D Fractal noise generator.
+        FractalNoise2D (class): 2D Fractal noise generator.
+        FractalNoise3D (class): 3D Fractal noise generator.
+    """
 
     # Perlin noise
     Perlin1D = PerlinNoise1D

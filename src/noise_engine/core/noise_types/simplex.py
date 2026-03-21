@@ -7,7 +7,20 @@ from noise_engine.core.device import get_device
 
 @define
 class _SimplexBase:
-    """Base class for Simplex noise implementations."""
+    """Base class for Simplex noise implementations.
+
+    Args:
+        scale (float): The scaling factor for the noise output.
+        shape (Tuple[int, ...]): The output tensor shape.
+        seed (Optional[int]): Random seed for reproducible results. If None,
+            results will vary between calls.
+
+    Attributes:
+        scale (float): The scaling factor for the noise output.
+        shape (Tuple[int, ...]): The output tensor shape.
+        seed (Optional[int]): Random seed for reproducible results. If None,
+            results will vary between calls.
+    """
 
     scale: float
     shape: Tuple[int, ...]

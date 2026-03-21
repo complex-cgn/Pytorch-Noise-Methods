@@ -27,11 +27,7 @@ def main() -> None:
         output = noise.FractalNoise2D(
             scale=settings.noise.scale,
             octaves=settings.noise.num_octaves,
-<<<<<<< HEAD
             shape=(100, 100),
-=======
-            shape=(50, 50),
->>>>>>> e5d8bbe (feat: update noise generation to fractal noise with configurable octaves and version bump to 0.2.0)
             seed=settings.noise.seed,
         )()
 

@@ -7,6 +7,43 @@ from noise_engine.core.device import get_device
 
 @define
 class _FractalBase:
+    """Base class for fractal noise generation with configurable parameters.
+
+    This class provides common parameters for generating fractal noise using the
+    fractional Brownian motion (fBm) algorithm. It serves as a foundation for
+    1D, 2D, and 3D fractal noise implementations.
+
+    Args:
+        scale (float): The scaling factor for the noise output.
+        shape (Tuple[int, ...]): The output tensor shape.
+        octaves (int): The number of noise layers to combine. More octaves
+            create more detailed noise but increase computation time.
+        persistence (float): The amplitude multiplier between successive octaves.
+            Values closer to 1.0 produce rougher noise, while values closer to 0.0
+            produce smoother noise.
+        amplitude (float): The initial amplitude of the noise.
+        frequency (float): The initial frequency of the noise.
+        lacunarity (float): The frequency multiplier between successive octaves.
+            Common values are 2.0 for standard fractal noise.
+        seed (Optional[int]): Random seed for reproducible results. If None,
+            results will vary between calls.
+
+    Attributes:
+        scale (float): The scaling factor for the noise output.
+        shape (Tuple[int, ...]): The output tensor shape.
+        octaves (int): The number of noise layers to combine. More octaves
+            create more detailed noise but increase computation time.
+        persistence (float): The amplitude multiplier between successive octaves.
+            Values closer to 1.0 produce rougher noise, while values closer to 0.0
+            produce smoother noise.
+        amplitude (float): The initial amplitude of the noise.
+        frequency (float): The initial frequency of the noise.
+        lacunarity (float): The frequency multiplier between successive octaves.
+            Common values are 2.0 for standard fractal noise.
+        seed (Optional[int]): Random seed for reproducible results. If None,
+            results will vary between calls.
+    """
+
     scale: float
     shape: Tuple[int, ...]
     octaves: int = 1
@@ -23,7 +60,26 @@ class _FractalBase:
 
 @define
 class FractalNoise1D(_FractalBase):
-    """Fractal Brownian Motion (fBm) 1D noise - optimized implementation."""
+    """Generate 1D Fractal Brownian Motion (fBm) noise.
+
+    This class generates 1D fractal noise using the fractional Brownian motion
+    algorithm by combining multiple octaves of noise with varying frequencies
+    and amplitudes.
+
+    The resulting noise will have a self-similar, natural-looking pattern that
+    can be used for various applications like terrain generation, texture synthesis,
+    or procedural content generation.
+
+    Returns:
+        torch.Tensor: A 1D tensor of shape specified by the 'shape' parameter,
+            containing the generated fractal noise values in the range [0, 1].
+
+    Example:
+        >>> noise_gen = FractalNoise1D(shape=(100,), octaves=4, persistence=0.5)
+        >>> noise = noise_gen()
+        >>> print(noise.shape)
+        torch.Size([100])
+    """
 
     def __call__(self) -> torch.Tensor:
         logging.debug(
@@ -54,7 +110,26 @@ class FractalNoise1D(_FractalBase):
 
 @define
 class FractalNoise2D(_FractalBase):
-    """Fractal Brownian Motion (fBm) 2D noise - optimized implementation."""
+    """Generate 2D Fractal Brownian Motion (fBm) noise.
+
+    This class generates 2D fractal noise using the fractional Brownian motion
+    algorithm by combining multiple octaves of noise with varying frequencies
+    and amplitudes.
+
+    The resulting noise will have a self-similar, natural-looking pattern that
+    can be used for various applications like terrain generation, texture synthesis,
+    or procedural content generation.
+
+    Returns:
+        torch.Tensor: A 2D tensor of shape specified by the 'shape' parameter,
+            containing the generated fractal noise values in the range [0, 1].
+
+    Example:
+        >>> noise_gen = FractalNoise2D(shape=(100, 100), octaves=4, persistence=0.5)
+        >>> noise = noise_gen()
+        >>> print(noise.shape)
+        torch.Size([100, 100])
+    """
 
     def __call__(self) -> torch.Tensor:
         logging.debug(
@@ -85,7 +160,26 @@ class FractalNoise2D(_FractalBase):
 
 @define
 class FractalNoise3D(_FractalBase):
-    """Fractal Brownian Motion (fBm) 3D noise - optimized implementation."""
+    """Generate 3D Fractal Brownian Motion (fBm) noise.
+
+    This class generates 3D fractal noise using the fractional Brownian motion
+    algorithm by combining multiple octaves of noise with varying frequencies
+    and amplitudes.
+
+    The resulting noise will have a self-similar, natural-looking pattern that
+    can be used for various applications like terrain generation, texture synthesis,
+    or procedural content generation in 3D space.
+
+    Returns:
+        torch.Tensor: A 3D tensor of shape specified by the 'shape' parameter,
+            containing the generated fractal noise values in the range [0, 1].
+
+    Example:
+        >>> noise_gen = FractalNoise3D(shape=(50, 50, 50), octaves=4, persistence=0.5)
+        >>> noise = noise_gen()
+        >>> print(noise.shape)
+        torch.Size([50, 50, 50])
+    """
 
     def __call__(self) -> torch.Tensor:
         logging.debug(

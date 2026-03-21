@@ -7,7 +7,23 @@ from noise_engine.core.device import get_device
 
 @define
 class _PerlinBase:
-    """Base class for Perlin noise with shared functionality."""
+    """Base class for Perlin noise with shared functionality.
+
+    Args:
+        scale (float): The scaling factor for the noise output.
+        shape (Tuple[int, ...]): The output tensor shape.
+        seed (Optional[int]): Random seed for reproducible results. If None,
+            results will vary between calls.
+
+    Attributes:
+        scale (float): The scaling factor for the noise output.
+        shape (Tuple[int, ...]): The output tensor shape.
+        seed (Optional[int]): Random seed for reproducible results. If None,
+            results will vary between calls.
+
+    Raises:
+        ValueError: If shape is not 1D, 2D or 3D, or if scale is negative.
+    """
 
     scale: float
     shape: Tuple[int, ...]
@@ -30,10 +46,10 @@ class _PerlinBase:
         Equivalent to: 6t⁵ - 15t⁴ + 10t³
 
         Args:
-            t: Input tensor in range [0, 1]
+            t (torch.Tensor): Input tensor in range [0, 1]
 
         Returns:
-            Smoothed tensor in range [0, 1] with zero first and second derivatives at endpoints
+            torch.Tensor: Smoothed tensor in range [0, 1] with zero first and second derivatives at endpoints
         """
         return t * t * (t * (t * (t * 6.0 - 15.0) + 10.0))
 
@@ -45,12 +61,12 @@ class _PerlinBase:
         Uses PyTorch's optimized implementation for better performance.
 
         Args:
-            a: Start tensor
-            b: End tensor
-            t: Interpolation factor in range [0, 1]
+            a (torch.Tensor): Start tensor
+            b (torch.Tensor): End tensor
+            t (torch.Tensor): Interpolation factor in range [0, 1]
 
         Returns:
-            Interpolated tensor: a + t * (b - a)
+            torch.Tensor: Interpolated tensor: a + t * (b - a)
         """
         return torch.lerp(a, b, t)
 

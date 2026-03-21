@@ -1,6 +1,7 @@
 LICENSE
 README.md
 pyproject.toml
+src/noise_engine/__init__.py
 src/noise_engine/__main__.py
 src/noise_engine/settings.py
 src/noise_engine/api/__init__.py
