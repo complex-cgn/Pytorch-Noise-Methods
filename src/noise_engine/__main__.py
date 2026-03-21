@@ -3,8 +3,8 @@ import logging
 import click
 import noise_engine.core.noise as noise
 from noise_engine.settings import get_settings
-from noise_engine.utils.dynamic_3d_plotter import Dynamic3DPlotter
-from noise_engine.utils.timer import Timer
+from noise_engine.core.utils.dynamic_3d_plotter import Dynamic3DPlotter
+from noise_engine.core.utils.timer import Timer
 from rich.logging import RichHandler
 
 logging.basicConfig(
@@ -21,13 +21,17 @@ def main() -> None:
     """Main entry point for noise generation."""
     settings = get_settings()
 
-    logging.info("Generating Perlin noise...")
+    logging.info("Generating Fractal noise...")
 
     with Timer() as t:
         output = noise.FractalNoise2D(
             scale=settings.noise.scale,
             octaves=settings.noise.num_octaves,
+<<<<<<< HEAD
             shape=(100, 100),
+=======
+            shape=(50, 50),
+>>>>>>> e5d8bbe (feat: update noise generation to fractal noise with configurable octaves and version bump to 0.2.0)
             seed=settings.noise.seed,
         )()
 

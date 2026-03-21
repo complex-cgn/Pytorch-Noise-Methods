@@ -2,22 +2,38 @@
 Noise Engine SDK - Main module for easy access to all noise generation methods.
 """
 
+<<<<<<< HEAD
 from noise_engine.core.noise_opt.perlin_noise import (
+=======
+from noise_engine.core.noise_types.perlin import (
+>>>>>>> e5d8bbe (feat: update noise generation to fractal noise with configurable octaves and version bump to 0.2.0)
     PerlinNoise1D,
     PerlinNoise2D,
     PerlinNoise3D,
 )
+<<<<<<< HEAD
 from noise_engine.core.noise_opt.simplex_noise import (
+=======
+from noise_engine.core.noise_types.simplex import (
+>>>>>>> e5d8bbe (feat: update noise generation to fractal noise with configurable octaves and version bump to 0.2.0)
     SimplexNoise1D,
     SimplexNoise2D,
     SimplexNoise3D,
 )
+<<<<<<< HEAD
 from noise_engine.core.noise_opt.white_noise import (
+=======
+from noise_engine.core.noise_types.white import (
+>>>>>>> e5d8bbe (feat: update noise generation to fractal noise with configurable octaves and version bump to 0.2.0)
     WhiteNoise1D,
     WhiteNoise2D,
     WhiteNoise3D,
 )
+<<<<<<< HEAD
 from noise_engine.core.noise_opt.fractal_noise import (
+=======
+from noise_engine.core.noise_types.fractal import (
+>>>>>>> e5d8bbe (feat: update noise generation to fractal noise with configurable octaves and version bump to 0.2.0)
     FractalNoise1D,
     FractalNoise2D,
     FractalNoise3D,
